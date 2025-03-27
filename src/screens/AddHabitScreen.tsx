@@ -19,6 +19,7 @@ import {
   createDefaultChannel,
   scheduleHabitNotification,
 } from '../utils/notifications';
+import Toast from 'react-native-toast-message';
 
 const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
@@ -77,7 +78,12 @@ const AddHabitScreen = () => {
       await createDefaultChannel();
       await scheduleHabitNotification(newHabit);
 
-      setSuccess(true); // показываем текст
+      Toast.show({
+        type: 'success',
+        text1: 'Привычка создана!',
+        position: 'bottom',
+        bottomOffset: 60,
+      });
       setTimeout(() => {
         // очищаем форму
         setTitle('');
@@ -89,9 +95,15 @@ const AddHabitScreen = () => {
         setTime(null);
         setSuccess(false);
         navigation.goBack();
-      }, 1000); // 1 секунда
+      }, 100); // 1 секунда
     } catch (error) {
-      Alert.alert('Ошибка при создании привычки', (error as Error).message);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        bottomOffset: 60,
+        text1: 'Ошибка',
+        text2: (error as Error).message,
+      });
     }
   };
 

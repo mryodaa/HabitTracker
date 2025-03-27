@@ -4,6 +4,7 @@ import {
   DefaultTheme,
   DarkTheme,
 } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {ThemeContext, ThemeProvider} from './src/contexts/ThemeContext';
@@ -44,6 +45,7 @@ const App = () => {
     <ThemeProvider>
       <HabitsProvider>
         <AppNavigator />
+        <Toast />
       </HabitsProvider>
     </ThemeProvider>
   );
