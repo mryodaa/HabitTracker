@@ -14,8 +14,13 @@ import {useNavigation} from '@react-navigation/native';
 import {nanoid} from 'nanoid/non-secure';
 import {useHabits} from '../contexts/HabitsContext';
 import {Habit} from '../data/types';
+import {
+  requestNotificationPermission,
+  createDefaultChannel,
+  scheduleHabitNotification,
+} from '../utils/notifications';
 
-const weekDays = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
 const AddHabitScreen = () => {
   const {addHabit} = useHabits();
@@ -31,6 +36,7 @@ const AddHabitScreen = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [time, setTime] = useState<Date | null>(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const toggleDay = (dayIndex: number) => {
     setCustomDays(prev =>
@@ -40,33 +46,53 @@ const AddHabitScreen = () => {
     );
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!title.trim()) {
       Alert.alert('Введите название привычки');
       return;
     }
 
-    const newHabit: Habit = {
-      id: nanoid(),
-      title,
-      frequency,
-      customDays: frequency === 'custom' ? customDays : undefined,
-      time: time ? time.toTimeString().slice(0, 5) : undefined,
-      description: description.trim() || undefined,
-      durationDays: durationDays ? parseInt(durationDays, 10) : undefined,
-      createdAt: new Date().toISOString(),
-      isDoneToday: false,
-      lastDone: undefined,
-      missedDates: [],
-      notificationsEnabled,
-      notificationTime:
-        notificationsEnabled && time
-          ? time.toTimeString().slice(0, 5)
-          : undefined,
-    };
+    try {
+      const newHabit: Habit = {
+        id: nanoid(),
+        title,
+        frequency,
+        customDays: frequency === 'custom' ? customDays : undefined,
+        time: time ? time.toTimeString().slice(0, 5) : undefined,
+        description: description.trim() || undefined,
+        durationDays: durationDays ? parseInt(durationDays, 10) : undefined,
+        createdAt: new Date().toISOString(),
+        isDoneToday: false,
+        lastDone: undefined,
+        missedDates: [],
+        notificationsEnabled,
+        notificationTime:
+          notificationsEnabled && time
+            ? time.toTimeString().slice(0, 5)
+            : undefined,
+      };
 
-    addHabit(newHabit);
-    navigation.goBack();
+      addHabit(newHabit);
+      await requestNotificationPermission();
+      await createDefaultChannel();
+      await scheduleHabitNotification(newHabit);
+
+      setSuccess(true); // показываем текст
+      setTimeout(() => {
+        // очищаем форму
+        setTitle('');
+        setFrequency('everyday');
+        setCustomDays([]);
+        setDescription('');
+        setDurationDays('');
+        setNotificationsEnabled(false);
+        setTime(null);
+        setSuccess(false);
+        navigation.goBack();
+      }, 1000); // 1 секунда
+    } catch (error) {
+      Alert.alert('Ошибка при создании привычки', (error as Error).message);
+    }
   };
 
   return (
