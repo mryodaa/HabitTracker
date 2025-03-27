@@ -11,7 +11,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import ProgressBar from '../components/ProgressBar';
 import HabitCard from '../components/HabitCard';
 import {getGreeting} from '../utils/getGreeting';
-import {Habit} from '../data/types';
+import {useHabits} from '../contexts/HabitsContext';
+import {isHabitForToday} from '../utils/isHabbitForToday';
 
 const HomeScreen = () => {
   const greeting = getGreeting();
@@ -21,33 +22,8 @@ const HomeScreen = () => {
     month: 'long',
   });
 
-  const dummyHabits: Habit[] = [
-    {
-      id: '1',
-      title: 'Пить воду',
-      frequency: 'everyday',
-      time: '08:00',
-      description: 'Не забыть выпить 2 стакана',
-      durationDays: 30,
-      createdAt: new Date(Date.now() - 5 * 86400000).toISOString(), // 5 дней назад
-      lastDone: new Date().toISOString(),
-      isDoneToday: true,
-      missedDates: [],
-      notificationsEnabled: true,
-      notificationTime: '08:00',
-    },
-    {
-      id: '2',
-      title: 'Чтение 10 мин',
-      frequency: 'weekdays',
-      durationDays: 20,
-      createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-      lastDone: undefined,
-      isDoneToday: false,
-      missedDates: ['2025-03-25'],
-      notificationsEnabled: false,
-    },
-  ];
+  const {habits} = useHabits();
+  const todayHabits = habits.filter(isHabitForToday);
 
   return (
     <View style={styles.container}>
@@ -56,15 +32,24 @@ const HomeScreen = () => {
 
       <View style={{marginTop: 20}}>
         <Text style={styles.sectionTitle}>Сегодня</Text>
-        <ProgressBar progress={0.33} />
+        <ProgressBar
+          progress={
+            todayHabits.filter(h => h.isDoneToday).length /
+            (todayHabits.length || 1)
+          }
+        />
       </View>
 
       <ScrollView
         contentContainerStyle={styles.habitList}
         showsVerticalScrollIndicator={false}>
-        {dummyHabits.map(habit => (
-          <HabitCard key={habit.id} habit={habit} />
-        ))}
+        {todayHabits.length === 0 ? (
+          <Text style={styles.emptyText}>
+            На сегодня привычек нет. Добавьте первую!
+          </Text>
+        ) : (
+          todayHabits.map(habit => <HabitCard key={habit.id} habit={habit} />)
+        )}
       </ScrollView>
 
       <TouchableOpacity style={styles.fab}>
@@ -98,6 +83,12 @@ const styles = StyleSheet.create({
   },
   habitList: {
     paddingVertical: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 24,
   },
   fab: {
     position: 'absolute',

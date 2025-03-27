@@ -11,6 +11,7 @@ export interface Habit {
   missedDates: string[];
   notificationsEnabled: boolean;
   notificationTime?: string;
+  customDays?: number[];
 }
 
 // THEME
