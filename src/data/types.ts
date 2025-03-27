@@ -1,17 +1,10 @@
-export type Priority = 'low' | 'medium' | 'high';
-export type RepeatType = 'none' | 'daily' | 'weekly';
-
-export type Task = {
+export interface Habit {
   id: string;
   title: string;
-  category: string;
-  date: string;
-  time?: string;
-  priority: Priority;
-  repeat: RepeatType;
-  isDone: boolean;
-  notificationId?: string; // 👈 добавили
-};
+  frequency: string;
+  progress: string;
+  lastDone: string;
+}
 
 // THEME
 export type ThemeType = 'light' | 'dark';
