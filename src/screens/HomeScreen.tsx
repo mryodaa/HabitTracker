@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import ProgressBar from '../components/ProgressBar';
 import HabitCard from '../components/HabitCard';
 import {getGreeting} from '../utils/getGreeting';
@@ -24,23 +25,27 @@ const HomeScreen = () => {
     {
       id: '1',
       title: 'Пить воду',
-      frequency: 'Каждый день',
-      progress: '5/30',
-      lastDone: 'Сегодня',
+      frequency: 'everyday',
+      time: '08:00',
+      description: 'Не забыть выпить 2 стакана',
+      durationDays: 30,
+      createdAt: new Date(Date.now() - 5 * 86400000).toISOString(), // 5 дней назад
+      lastDone: new Date().toISOString(),
+      isDoneToday: true,
+      missedDates: [],
+      notificationsEnabled: true,
+      notificationTime: '08:00',
     },
     {
       id: '2',
       title: 'Чтение 10 мин',
-      frequency: 'Будни',
-      progress: '2/20',
-      lastDone: 'Вчера',
-    },
-    {
-      id: '3',
-      title: 'Прогулка',
-      frequency: 'Через день',
-      progress: '10/15',
-      lastDone: '2 дня назад',
+      frequency: 'weekdays',
+      durationDays: 20,
+      createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+      lastDone: undefined,
+      isDoneToday: false,
+      missedDates: ['2025-03-25'],
+      notificationsEnabled: false,
     },
   ];
 
@@ -57,15 +62,8 @@ const HomeScreen = () => {
       <ScrollView
         contentContainerStyle={styles.habitList}
         showsVerticalScrollIndicator={false}>
-        {dummyHabits.map((habit, index) => (
-          <HabitCard
-            id={`${habit.id}`}
-            key={index}
-            title={habit.title}
-            frequency={habit.frequency}
-            progress={habit.progress}
-            lastDone={habit.lastDone}
-          />
+        {dummyHabits.map(habit => (
+          <HabitCard key={habit.id} habit={habit} />
         ))}
       </ScrollView>
 

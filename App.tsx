@@ -6,7 +6,7 @@ import {
 } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {ThemeContext} from './src/contexts/ThemeContext';
+import {ThemeContext, ThemeProvider} from './src/contexts/ThemeContext';
 import MainTabs from './src/navigation/MainTabs';
 
 // Страницы вне табов:
@@ -15,14 +15,15 @@ import EditHabitScreen from './src/screens/EditHabitScreen';
 import HabitHistoryScreen from './src/screens/HabitHistoryScreen';
 import HabitStatsScreen from './src/screens/HabitStatsScreen';
 import ReminderSettingsScreen from './src/screens/SettingsScreen';
+import {HabitsProvider} from './src/contexts/HabitsContext';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   const {theme} = useContext(ThemeContext);
-
+  // theme={theme === 'dark' ? DarkTheme : DefaultTheme} вставить в контейнер
   return (
-    <NavigationContainer theme={theme === 'dark' ? DarkTheme : DefaultTheme}>
+    <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="HabitDetail" component={HabitDetailScreen} />
@@ -38,4 +39,14 @@ const AppNavigator = () => {
   );
 };
 
-export default AppNavigator;
+const App = () => {
+  return (
+    <ThemeProvider>
+      <HabitsProvider>
+        <AppNavigator />
+      </HabitsProvider>
+    </ThemeProvider>
+  );
+};
+
+export default App;
