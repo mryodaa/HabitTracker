@@ -5,15 +5,20 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import ProgressBar from '../components/ProgressBar';
 import HabitCard from '../components/HabitCard';
-import { getGreeting } from '../utils/getGreeting';
-import { useHabits } from '../contexts/HabitsContext';
-import { isHabitForToday } from '../utils/isHabitForToday';
-import { useNavigation } from '@react-navigation/native';
+import {getGreeting} from '../utils/getGreeting';
+import {useHabits} from '../contexts/HabitsContext';
+import {isHabitForToday} from '../utils/isHabitForToday';
+import {useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
 
 const HomeScreen = () => {
   const greeting = getGreeting();
@@ -23,8 +28,8 @@ const HomeScreen = () => {
     month: 'long',
   });
 
-  const navigation = useNavigation();
-  const { habits, markHabitAsDone } = useHabits();
+  const navigation = useNavigation<NavigationProp>();
+  const {habits, toggleHabitDone} = useHabits();
 
   const todayHabits = habits.filter(isHabitForToday);
   const completed = todayHabits.filter(h => h.isDoneToday).length;
@@ -36,7 +41,7 @@ const HomeScreen = () => {
       <Text style={styles.greeting}>{greeting}</Text>
       <Text style={styles.date}>{today}</Text>
 
-      <View style={{ marginTop: 20 }}>
+      <View style={{marginTop: 20}}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Сегодня</Text>
           <Text style={styles.progressLabel}>
@@ -48,8 +53,7 @@ const HomeScreen = () => {
 
       <ScrollView
         contentContainerStyle={styles.habitList}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         {todayHabits.length === 0 ? (
           <Text style={styles.emptyText}>
             На сегодня привычек нет. Добавьте первую!
@@ -59,7 +63,8 @@ const HomeScreen = () => {
             <HabitCard
               key={habit.id}
               habit={habit}
-              onMarkDone={() => markHabitAsDone(habit.id)}
+              onMarkDone={() => toggleHabitDone(habit.id)}
+              onPress={() => navigation.navigate('HabitDetail', {id: habit.id})}
             />
           ))
         )}
@@ -67,8 +72,7 @@ const HomeScreen = () => {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate('AddHabit' as never)}
-      >
+        onPress={() => navigation.navigate('Добавить' as never)}>
         <Icon name="add" size={28} color="#fff" />
       </TouchableOpacity>
     </View>
@@ -127,6 +131,6 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6,
+    // elevation: 6,
   },
 });

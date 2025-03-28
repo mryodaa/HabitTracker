@@ -53,10 +53,7 @@ const HabitCard = ({habit, onPress, onMarkDone}: Props) => {
         <Text style={styles.meta}>🕓 Последний раз: {lastDone}</Text>
         <Text style={styles.meta}>🔁 Следующее: {formattedNextDate}</Text>
       </View>
-      <TouchableOpacity
-        onPress={onMarkDone}
-        disabled={habit.isDoneToday}
-        activeOpacity={0.6}>
+      <TouchableOpacity onPress={onMarkDone} activeOpacity={0.6}>
         <View
           style={[
             styles.checkbox,

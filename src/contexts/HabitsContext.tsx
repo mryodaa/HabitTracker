@@ -10,7 +10,7 @@ interface HabitsContextType {
   addHabit: (habit: Habit) => void;
   updateHabit: (habit: Habit) => void;
   deleteHabit: (id: string) => void;
-  markHabitAsDone: (id: string) => void;
+  toggleHabitDone: (id: string) => void;
   resetDailyState: () => void;
 }
 
@@ -59,12 +59,16 @@ export const HabitsProvider: React.FC<{children: React.ReactNode}> = ({
     setHabits(prev => prev.filter(h => h.id !== id));
   };
 
-  const markHabitAsDone = (id: string) => {
+  const toggleHabitDone = (id: string) => {
     const today = new Date().toISOString();
     setHabits(prev =>
       prev.map(habit =>
         habit.id === id
-          ? {...habit, isDoneToday: true, lastDone: today}
+          ? {
+              ...habit,
+              isDoneToday: !habit.isDoneToday,
+              lastDone: !habit.isDoneToday ? today : undefined,
+            }
           : habit,
       ),
     );
@@ -101,7 +105,7 @@ export const HabitsProvider: React.FC<{children: React.ReactNode}> = ({
         addHabit,
         updateHabit,
         deleteHabit,
-        markHabitAsDone,
+        toggleHabitDone,
         resetDailyState,
       }}>
       {children}

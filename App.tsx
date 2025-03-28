@@ -17,8 +17,9 @@ import HabitHistoryScreen from './src/screens/HabitHistoryScreen';
 import HabitStatsScreen from './src/screens/HabitStatsScreen';
 import ReminderSettingsScreen from './src/screens/SettingsScreen';
 import {HabitsProvider} from './src/contexts/HabitsContext';
+import {RootStackParamList} from './src/navigation/types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator = () => {
   const {theme} = useContext(ThemeContext);
